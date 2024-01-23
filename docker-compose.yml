@@ -5,7 +5,7 @@ services:
         container_name: shlink_nginx
         image: nginx:1.25-alpine
         ports:
-            - "8000:80"
+            - "8001:80"
         volumes:
             - ./:/home/shlink/www
             - ./docs:/home/shlink/www/public/docs
@@ -24,10 +24,7 @@ services:
             - ./:/home/shlink/www
             - ./data/infra/php.ini:/usr/local/etc/php/php.ini
         links:
-            - shlink_db_mysql
-            - shlink_db_postgres
             - shlink_db_maria
-            - shlink_db_ms
             - shlink_redis
             - shlink_redis_acl
             - shlink_mercure
@@ -56,16 +53,13 @@ services:
             context: .
             dockerfile: ./data/infra/swoole.Dockerfile
         ports:
-            - "8080:8080"
+            - "8081:8080"
             - "9001:9001"
         volumes:
             - ./:/home/shlink
             - ./data/infra/php.ini:/usr/local/etc/php/php.ini
         links:
-            - shlink_db_mysql
-            - shlink_db_postgres
             - shlink_db_maria
-            - shlink_db_ms
             - shlink_redis
             - shlink_redis_acl
             - shlink_mercure
@@ -88,10 +82,7 @@ services:
             - ./:/home/shlink
             - ./data/infra/php.ini:/usr/local/etc/php/php.ini
         links:
-            - shlink_db_mysql
-            - shlink_db_postgres
             - shlink_db_maria
-            - shlink_db_ms
             - shlink_redis
             - shlink_redis_acl
             - shlink_mercure
@@ -103,30 +94,6 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
 
-    shlink_db_mysql:
-        container_name: shlink_db_mysql
-        image: mysql:8.0
-        ports:
-            - "3307:3306"
-        volumes:
-            - ./:/home/shlink/www
-            - ./data/infra/database:/var/lib/mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: shlink
-
-    shlink_db_postgres:
-        container_name: shlink_db_postgres
-        image: postgres:12.2-alpine
-        ports:
-            - "5433:5432"
-        volumes:
-            - ./:/home/shlink/www
-            - ./data/infra/database_pg:/var/lib/postgresql/data
-        environment:
-            POSTGRES_PASSWORD: root
-            POSTGRES_DB: shlink
-            PGDATA: /var/lib/postgresql/data/pgdata
 
     shlink_db_maria:
         container_name: shlink_db_maria
@@ -140,15 +107,6 @@ services:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: shlink
             MYSQL_INITDB_SKIP_TZINFO: 1
-
-    shlink_db_ms:
-        container_name: shlink_db_ms
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        ports:
-            - "1433:1433"
-        environment:
-            ACCEPT_EULA: Y
-            SA_PASSWORD: "Passw0rd!"
 
     shlink_redis:
         container_name: shlink_redis
@@ -183,8 +141,8 @@ services:
             - "3080:80"
         environment:
             SERVER_NAME: ":80"
-            MERCURE_PUBLISHER_JWT_KEY: mercure_jwt_key_long_enough_to_avoid_error
-            MERCURE_SUBSCRIBER_JWT_KEY: mercure_jwt_key_long_enough_to_avoid_error
+            MERCURE_PUBLISHER_JWT_KEY: eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjZiZTEyYzc5ZmU4YjQ4ZmQwMzJkOGNiYTA3MjQ4MTZiIn0.e30.wpdQlVNQOxaRvisd9cxXfBXTQGNvtAVVrAZcgNRb33kETDKx2GBZPW8CYZX0HYXWUm_licrTI-TCZEUjouxA-w
+            MERCURE_SUBSCRIBER_JWT_KEY: eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjZiZTEyYzc5ZmU4YjQ4ZmQwMzJkOGNiYTA3MjQ4MTZiIn0.e30.iGhPAw8TtDBCuEQQRYMcZ2AFv-_ilK8Z_amXKmLAbOayNOBKvsNLF64-Rr8Au2sbh3-Nyj9tcZltXpdJAHjQfw
             MERCURE_EXTRA_DIRECTIVES: "cors_origins https://app.shlink.io http://localhost:3000 http://127.0.0.1:3000"
 
     shlink_rabbitmq:
@@ -215,10 +173,10 @@ services:
             # https://github.com/matomo-org/matomo/issues/9549
             - ./data/infra/matomo:/var/www/html
         links:
-            - shlink_db_mysql
+            - shlink_db_maria
         environment:
-            MATOMO_DATABASE_HOST: "shlink_db_mysql"
+            MATOMO_DATABASE_HOST: "shlink_db_maria"
             MATOMO_DATABASE_ADAPTER: "mysql"
             MATOMO_DATABASE_DBNAME: "matomo"
             MATOMO_DATABASE_USERNAME: "root"
-            MATOMO_DATABASE_PASSWORD: "root"
+            MATOMO_DATABASE_PASSWORD: "shlink"
