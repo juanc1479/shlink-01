@@ -99,7 +99,7 @@ services:
         container_name: shlink_db_maria
         image: mariadb:10.7
         ports:
-            - "3308:3306"
+            - "3309:3306"
         volumes:
             - ./:/home/shlink/www
             - ./data/infra/database_maria:/var/lib/mysql
@@ -112,14 +112,14 @@ services:
         container_name: shlink_redis
         image: redis:6.2-alpine
         ports:
-            - "6380:6379"
+            - "6381:6379"
 
     shlink_redis_acl:
         container_name: shlink_redis_acl
         image: redis:6.2-alpine
         command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
         ports:
-            - "6382:6379"
+            - "6383:6379"
         volumes:
             - ./data/infra/redis/redis-acl.conf:/usr/local/etc/redis/redis.conf
 
@@ -138,7 +138,7 @@ services:
         container_name: shlink_mercure
         image: dunglas/mercure:v0.15
         ports:
-            - "3080:80"
+            - "3082:80"
         environment:
             SERVER_NAME: ":80"
             MERCURE_PUBLISHER_JWT_KEY: eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjZiZTEyYzc5ZmU4YjQ4ZmQwMzJkOGNiYTA3MjQ4MTZiIn0.e30.wpdQlVNQOxaRvisd9cxXfBXTQGNvtAVVrAZcgNRb33kETDKx2GBZPW8CYZX0HYXWUm_licrTI-TCZEUjouxA-w
